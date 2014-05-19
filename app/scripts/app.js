@@ -1,7 +1,7 @@
 'use strict';
 
 angular
-  .module('webfrontendApp', [
+  .module('mantisApp', [
     'ngCookies',
     'ngResource',
     'ngSanitize',

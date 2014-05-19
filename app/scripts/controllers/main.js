@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('webfrontendApp')
+angular.module('mantisApp')
   .controller('MainCtrl', function ($scope, $http) {
     // API
     $scope.endpoint = '127.0.0.1:9001';
