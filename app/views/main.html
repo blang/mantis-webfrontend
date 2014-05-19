@@ -1,0 +1,215 @@
+<div class="header">
+  <ul class="nav nav-pills pull-right">
+    <li class="active"><a ng-href="#">Home</a></li>
+    <li><a ng-href="#">About</a></li>
+    <li><a ng-href="#">Contact</a></li>
+  </ul>
+  <h3 class="text-muted">webfrontend</h3>
+</div>
+
+<div class="row" id="errorMsg" style="display:none">
+  <div class="col-md-12">
+    <div class="alert alert-danger">
+      Error: {{errorMsg}}
+    </div>
+  </div>
+</div>
+
+<div class="row panel panel-default" ng-show="!connected">
+  <div class="col-md-12">
+    <form class="form-signin" role="form">
+      <h2 class="form-signin-heading">Login</h2>
+      <input type="text" ng-model="endpoint" class="form-control" placeholder="API Address" required>
+      <input type="username" ng-model="username" class="form-control" placeholder="Username" required autofocus>
+      <input type="password" ng-model="password" class="form-control" placeholder="Password" required>
+      <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="Login()">Login</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="configInstance">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" ng-click="GetInstances()" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Configure instance {{selInstance.id}}</h4>
+      </div>
+      <div class="modal-body">
+        <div id="confInstError" class="alert alert-danger" style="display:none">
+          Error: {{confInstErrorMsg}}
+        </div>
+        <form role="form">
+          <div class="form-group">
+            <label>Name</label>
+            <div class="input-group">
+              <input type="text" id="confInstInputName" class="form-control" ng-model="selInstance.name" placeholder="Instance Name">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-primary" ng-click="InstanceSaveName(selInstance)">Save</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Server Modstring</label>
+            <div class="input-group">
+              <input type="text" id="confInstInputServerMods" class="form-control" ng-model="selInstance.servermods" placeholder="@mod1;@mod2">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-primary" ng-click="InstanceSaveServerMods(selInstance)">Save</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>HC Modstring</label>
+            <div class="input-group">
+              <input type="text" id="confInstInputHCMods" class="form-control" ng-model="selInstance.hcmods" placeholder="@mod1;@mod2">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-primary" ng-click="InstanceSaveHCMods(selInstance)">Save</button>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Client Modstring</label>
+            <div class="input-group">
+              <input type="text" id="confInstInputClientMods" class="form-control" ng-model="selInstance.clientmods" placeholder="@mod1;@mod2">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-primary" ng-click="InstanceSaveClientMods(selInstance)">Save</button>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="GetInstances()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row panel panel-default" ng-show="connected" id="instances">
+  <div class="col-md-12">
+    <h2>Instances <i class="fa fa-refresh" ng-click="GetInstances()"></i></h2>
+    <div class="table-responsive" id="instanceTable">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Instance</th>
+            <th>Game</th>
+            <th>Server</th>
+            <th>HC</th>
+            <th>Config</th>
+            <th>Controls</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="instance in instances">
+            <td>{{instance.name}}</td>
+            <td>{{instance.game}}</td>
+            <td><i class="fa fa-circle" ng-show="instance.serverstatus == 'running'"></i><i class="fa fa-circle-o" ng-show="instance.serverstatus == 'stopped'"></i><i class="fa fa-circle" ng-show="instance.serverstatus != 'running' && instance.serverstatus != 'stopped'"></i></td>
+            <td><i class="fa fa-circle" ng-show="instance.hcstatus == 'running'"></i><i class="fa fa-circle-o" ng-show="instance.hcstatus == 'stopped'"></i><i class="fa fa-circle" ng-show="instance.hcstatus != 'running' && instance.hcstatus != 'stopped'"></i></td>
+            <td><button type="button" class="btn btn-default" ng-click="ConfigureInstance(instance)"><span class="glyphicon glyphicon-cog"></span> Configure</button></td>
+            <td>
+              <button ng-show="instance.serverstatus == 'stopped'" type="button" class="btn btn-default" ng-click="StartServer(instance)"><span class="glyphicon glyphicon-play"></span> Start Server</button>
+              
+              <button ng-show="instance.serverstatus != 'stopped'" type="button" class="btn btn-default" ng-click="StopServer(instance)"><span class="glyphicon glyphicon-stop"></span> Stop Server</button>
+
+              <button ng-show="instance.hcstatus == 'stopped'" type="button" class="btn btn-default" ng-click="StartHC(instance)"><span class="glyphicon glyphicon-play"></span> Start HC</button>
+
+              <button ng-show="instance.hcstatus != 'stopped'" type="button" class="btn btn-default" ng-click="StopHC(instance)"><span class="glyphicon glyphicon-stop"></span> Stop HC</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- External Instance Config Modal -->
+<div class="modal fade" id="configExtInstance">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" ng-click="GetExtInstances()" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Configure external instance {{selExtInstance.id}}</h4>
+      </div>
+      <div class="modal-body">
+        <div id="confExtInstError" class="alert alert-danger" style="display:none">
+          Error: {{confExtInstErrorMsg}}
+        </div>
+        <form role="form">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" class="form-control" ng-model="selExtInstance.name" placeholder="Instance Name">
+          </div>
+
+          <div class="form-group">
+            <label>Game</label>
+            <input type="text" class="form-control" ng-model="selExtInstance.game" placeholder="a2/a3">
+          </div>
+
+          <div class="form-group">
+            <label>Host</label>
+            <input type="text" class="form-control" ng-model="selExtInstance.host" placeholder="192.168.0.1">
+          </div>
+
+          <div class="form-group">
+            <label>Port</label>
+            <input type="text" class="form-control" ng-model="selExtInstance.port" placeholder="2302">
+          </div>
+
+          <div class="form-group">
+            <label>Password</label>
+            <input type="text" class="form-control" ng-model="selExtInstance.password" placeholder="secret">
+          </div>
+
+          <div class="form-group">
+            <label>Mods</label>
+            <input type="text" class="form-control" ng-model="selExtInstance.mods" placeholder="@mod1;@mod2">
+          </div>
+
+          <div class="form-group">
+            <label>BetaMod</label>
+            <input type="text" class="form-control" ng-model="selExtInstance.betamod" placeholder="@mybeta">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="GetExtInstances()">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="ExtInstanceSave(selExtInstance)">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="row panel panel-default" id="extinstances" ng-show="connected">
+  <div class="col-md-12">
+    <h2>External Instances <i class="fa fa-refresh" ng-click="GetExtInstances()"></i></h2>
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Game</th>
+            <th>Host</th>
+            <th>Config</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="instance in extinstances">
+            <td>{{instance.name}}</td>
+            <td>{{instance.game}}</td>
+            <td>{{instance.host}}:{{instance.port}}</td>
+            <td><button type="button" class="btn btn-default" ng-click="ConfigureExtInstance(instance)"><span class="glyphicon glyphicon-cog"></span> Configure</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
+</div>
