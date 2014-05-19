@@ -101,6 +101,7 @@
           <tr>
             <th>Instance</th>
             <th>Game</th>
+            <th>Port</th>
             <th>Server</th>
             <th>HC</th>
             <th>Config</th>
@@ -111,6 +112,7 @@
           <tr ng-repeat="instance in instances">
             <td>{{instance.name}}</td>
             <td>{{instance.game}}</td>
+            <td>{{instance.port}}</td>
             <td><i class="fa fa-circle" ng-show="instance.serverstatus == 'running'"></i><i class="fa fa-circle-o" ng-show="instance.serverstatus == 'stopped'"></i><i class="fa fa-circle" ng-show="instance.serverstatus != 'running' && instance.serverstatus != 'stopped'"></i></td>
             <td><i class="fa fa-circle" ng-show="instance.hcstatus == 'running'"></i><i class="fa fa-circle-o" ng-show="instance.hcstatus == 'stopped'"></i><i class="fa fa-circle" ng-show="instance.hcstatus != 'running' && instance.hcstatus != 'stopped'"></i></td>
             <td><button type="button" class="btn btn-default" ng-click="ConfigureInstance(instance)"><span class="glyphicon glyphicon-cog"></span> Configure</button></td>
