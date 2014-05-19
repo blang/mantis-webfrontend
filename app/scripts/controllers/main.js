@@ -175,6 +175,21 @@ angular.module('webfrontendApp')
       });
     };
 
+    $scope.InstanceSaveMission = function(instance) {
+      var postData = {
+        'mission': instance.mission
+      };
+      $http.post('http://'+$scope.endpoint+'/instance/'+instance.id, postData).success(function (data){
+        console.log('Instance: ',data);
+        $('#confInstInputMission').effect('highlight',{color: '#AEFFAB'},'slow');
+        $scope.selInstance.mission = data.mission;
+      }).error(function(data, status, headers, config) {
+        console.log('error', data, status, headers, config);
+        $('#confInstInputMission').effect('highlight',{color: '#FF7A7A'},'slow');
+        showInstConfErrorMessage(data.error);
+      });
+    };
+
     $scope.ConfigureExtInstance = function(instance) {
       console.log('ExtInstance:', instance);
       $scope.selExtInstance = instance;
